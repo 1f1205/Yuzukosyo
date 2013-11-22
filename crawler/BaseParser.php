@@ -4,21 +4,24 @@ abstract class BaseParser
 {
 
     /**
-     * 引数でしていされた記事の配列をループし、
-     * パースする
+     * 引数をループしパースする
+     *
+     * @param array $decodeContent APIのレスポンスをデコードしたデータの配列
+     * @access public
+     * @return array パースされたデータの配列
      */
-    public function parse($jsonDecodeContent) {
-        $articles = array();
+    public function parse($decodeContent) {
+        $datas = array();
 
-        foreach ($jsonDecodeContent as $entry) {
-            array_push($articles, $this->parseArticle($entry));
+        foreach ($decodeContent as $entry) {
+            array_push($datas, $this->parseArticle($entry));
         }
 
-        return $articles;
+        return $datas;
     }
 
     /**
-     * 記事情報をパースする
+     * データをパースする
      */
     abstract protected function parseArticle($entry);
 
