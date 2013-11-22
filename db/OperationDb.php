@@ -20,12 +20,6 @@ class OperationDb
     // 接続テーブル名
     private $table='';
 
-    // key名（操作するフィールド）
-    private $keys = array();
-
-    // value名(操作対象の値)
-    private $values = array();
-
     // pdoObject
     private $dbh = null;
 
@@ -51,24 +45,52 @@ class OperationDb
         $this->table = $name;
     }
 
-    /* まだ、使えま１０ 
-    function select( $keys = array() ){
-         $rtnData = array();
-         if( count( $keys ) == 0 ){ $keys = array( '*' ); }
-         $sql = 'SELECT ' . implode(',', $keys) . ' from ' . $this->table;
+    /* Select分作成 */
+    public function getSelectSql( $keyList = array() ){
+        $sql = '';
+        // 引数空の場合は*でひっぱってくる
+        if( count( $keyList ) == 0 ){ $keyList = array( '*' ); }
+        $keys = implode( ',', $keyList );
+        $sql = 'SELECT ' . $keys . ' from ' . $this->table;
 
-         foreach( $this->dbh->query( $sql ) as $row) {
-             $rtnData = $row;
-         }
-         return $rtnData;
+        return $sql;
     }
 
-    function insert( $dbh, $table, $keys = array(), $values = array() ){
-         $dbh->query('INSERT INTO rank (id, score) values (' . $id . ',' . $score . ')');
-    }*/
+    /* Insert分作成 */
+    public function getInsertSql( $keyList = array(), $valueList = array() ){
+        // 対象のkeyの数とvalueの数があってない場合はreturn
+        if( count( $keyList ) != count( $valueList ) ){ return 0; }
+      
+        $keys = implode( ',', $keyList );
+        $values = implode( ',', $valueList );
+        $sql = 'INSERT INTO ' . $this->table . ' (' . $keys . ') values (' . $values . ')';
+    
+        return $sql;
+    }
+
+    /* Update分作成 */
+    public function getUpdateSql( $keyList, $valueList ){
+        // 対象のkeyの数とvalueの数があってない場合はreturn
+        if( count( $keyList ) != count( $valueList ) ){ return 0; }
+      
+        // set句内作成
+        $set = array();
+        for( $i=0; $i<count( $keyList ); $i++ ){
+            $set[] = $keyList[$i] . ' = ' . $valueList[$i];
+        }
+        $sql = 'UPDATE ' . $this->table . ' SET ' . implode( ',', $set );
+ 
+        return $sql;
+    }
+
+    /* Delete分作成 */
+    public function getDeleteSql(){
+        $sql = 'DELETE FROM ' . $this->table;
+        return $sql;
+    }
 
     /* PDOStatementオブジェクト返却 */
-    function query( $keys = array() ){
+    public function query( $keys = array() ){
          if( count( $keys ) == 0 ){ $keys = array( '*' ); }
          $sql = 'SELECT ' . implode(',', $keys) . ' from ' . $this->table;
          $stmt = $this->dbh->query( $sql );
@@ -77,7 +99,7 @@ class OperationDb
     }
 
     /* データ取得 */
-    function fetch( $stmt ){
+    public function fetch( $stmt ){
          $rtnData = array();
          while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
              $rtnData[] = $data;
