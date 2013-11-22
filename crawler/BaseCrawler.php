@@ -28,12 +28,14 @@ abstract class BaseCrawler {
         }
 
         foreach( $urlList as $url ){
-            if( curl_getinfo( $handleList[$url], CURLINFO_HTTP_CODE ) !== 200 ){
-                // 通信失敗時
-                $this->fail();
-            } else {
+            // ステータスコード
+            $statusCode = curl_getinfo( $handleList[$url], CURLINFO_HTTP_CODE );
+            if($statusCode < 300 && $statusCode >= 200){
                 // 通信成功時
                 $this->success( curl_multi_getcontent( $handleList[$url] ) );
+            } else {
+                // 通信失敗時
+                $this->fail();
             }
 
             // ハンドルを閉じる
