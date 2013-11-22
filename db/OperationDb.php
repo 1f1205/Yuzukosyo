@@ -48,7 +48,7 @@ class OperationDb
 
     // table名設定
     public function setTable( $name ){
-	$this->table = $name;
+        $this->table = $name;
     }
 
     /* まだ、使えま１０ 
