@@ -5,19 +5,19 @@ class Parser extends BaseParser
     /**
      * 記事をパースする
      *
-     * @param mixed $entry 
+     * @param mixed $entry 記事1つ分
      * @access public
-     * @return void
+     * @return articleのオブジェクト
      */
     public function parseArticle($entry) {
-        $articleModel = new ArticleModel();
+        $article = StructYuzukosyo::$article;
 
-        $articleModel->title = $entry->title;
-        $articleModel->link = $entry->link;
-        $articleModel->publishedDate = $entry->publishedDate;
-        $articleModel->content = $entry->content;
-        $articleModel->categories = $entry->categories;
+        $article[ StructYuzukosyo::ARTICLE_TITLE ] = $entry->title;
+        $article[ StructYuzukosyo::ARTICLE_LINK ]  = $entry->link;
+        $article[ StructYuzukosyo::ARTICLE_PUBLISHED_DATE ] = $entry->publishedDate;
+        $article[ StructYuzukosyo::ARTICLE_CONTENT ]    = $entry->content;
+        $article[ StructYuzukosyo::ARTICLE_CATEGORIES ] = $entry->categories;
 
-        return $articleModel;
+        return $article;
     }
 }

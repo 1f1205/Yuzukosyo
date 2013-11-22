@@ -9,7 +9,7 @@ class Crawler extends BaseCrawler
 
         // 記事をパース
         $parser = new Parser();
-        $arrays = $parser->parse( $decode->entries );
+        $articles = $parser->parse( $decode->entries );
 
         // TODO この後に特徴語を抽出
         // DBに格納
