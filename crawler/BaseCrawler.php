@@ -20,9 +20,12 @@ abstract class BaseCrawler {
 
         // 全ての処理が完了するまで待つ
         $running = null;
-        do {
+        while( true ) {
+            if( $running === 0) {
+                break;
+            }
             curl_multi_exec( $multiHandle, $running );
-        } while( $running );
+        }
 
         foreach( $urlList as $url ){
             if( curl_getinfo( $handleList[$url], CURLINFO_HTTP_CODE ) !== 200 ){
