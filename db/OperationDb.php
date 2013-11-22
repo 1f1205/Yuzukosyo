@@ -45,41 +45,81 @@ class OperationDb
         $this->table = $name;
     }
 
+    // key設定
+    public function makeKey( $key ){
+        $targetKey = '*';
+        // 引数にあわせて取得キー作成
+        if( !empty( $key ) ){ 
+            if( is_array( $key ) ){
+                // 引数が配列の場合、カンマ区切り
+                $targetKey = implode( ',', $key );
+            }else{
+                // 引数がstringの場合、そのまんま
+                $targetKey = $key;
+            }
+        }
+        return $targetKey;
+    }
+
+    // key,value設定
+    public function makeKeyValue( $key, $value ){
+        $targetKey = '';
+        $targetValue = '';
+        if( is_array( $key ) ){
+            // 引数が配列の場合、カンマ区切り
+            $targetKey = implode( ',', $key );
+            $targetValues = implode( ',', $value );
+        }else{
+            // 引数がstringの場合、そのまんま
+            $targetKey = $key;
+            $targetValue = $value;
+        }
+        return array( $targetKey, $targetValue );
+    }
+
+    /* 比較句作成 */
+    public function comparePhrase( $key, $value ){
+        // 対象のkeyの数とvalueの数があってない場合はreturn
+        if( count( $key ) != count( $value ) ){ return 0; }
+      
+        // 比較句内作成
+        // todo 比較演算子の種類増やす（引数判断）
+        $compareArray = array();
+        if( is_array( $key ) ){
+            // 引数が配列の場合
+            for( $i=0; $i<count( $key ); $i++ ){
+                $compareArray[] = $key[$i] . ' = ' . $value[$i];
+            }
+        }else{
+                $compareArray[] = $key . ' = ' . $value;
+        }
+        return implode( ',', $compareArray );
+    }
+
     /* Select分作成 */
-    public function getSelectSql( $keyList = array() ){
+    public function getSelectSql( $key ){
         $sql = '';
-        // 引数空の場合は*でひっぱってくる
-        if( count( $keyList ) == 0 ){ $keyList = array( '*' ); }
-        $keys = implode( ',', $keyList );
-        $sql = 'SELECT ' . $keys . ' from ' . $this->table;
+        $targetKey = $this->makeKey( $key );
+        $sql = 'SELECT ' . $targetKey . ' from ' . $this->table;
 
         return $sql;
     }
 
     /* Insert分作成 */
-    public function getInsertSql( $keyList = array(), $valueList = array() ){
+    public function getInsertSql( $key, $value ){
         // 対象のkeyの数とvalueの数があってない場合はreturn
-        if( count( $keyList ) != count( $valueList ) ){ return 0; }
-      
-        $keys = implode( ',', $keyList );
-        $values = implode( ',', $valueList );
-        $sql = 'INSERT INTO ' . $this->table . ' (' . $keys . ') values (' . $values . ')';
+        if( count( $key ) != count( $value ) ){ return 0; }
+        list( $tartgetKey, $targetValue ) = $this->makeKeyValue( $key, $value ); 
+        $sql = 'INSERT INTO ' . $this->table . ' (' . $targetKey . ') values (' . $targetValue . ')';
     
         return $sql;
     }
 
     /* Update分作成 */
-    public function getUpdateSql( $keyList, $valueList ){
-        // 対象のkeyの数とvalueの数があってない場合はreturn
-        if( count( $keyList ) != count( $valueList ) ){ return 0; }
-      
-        // set句内作成
-        $set = array();
-        for( $i=0; $i<count( $keyList ); $i++ ){
-            $set[] = $keyList[$i] . ' = ' . $valueList[$i];
-        }
-        $sql = 'UPDATE ' . $this->table . ' SET ' . implode( ',', $set );
- 
+    public function getUpdateSql( $key, $value ){
+        $setPhrase = $this->comparePhrase( $key, $value );
+        $sql = 'UPDATE ' . $this->table . ' SET ' . $setPhrase;
+
         return $sql;
     }
 
@@ -89,10 +129,17 @@ class OperationDb
         return $sql;
     }
 
+    /* where $key=$valueを作成 */
+    public function getWhereEqual( $key, $value ){
+        $wherePhrase = $this->comparePhrase( $key, $value );
+        $sql = ' where ' . $wherePhrase;
+ 
+        return $sql;
+    }
+
+
     /* PDOStatementオブジェクト返却 */
-    public function query( $keys = array() ){
-         if( count( $keys ) == 0 ){ $keys = array( '*' ); }
-         $sql = 'SELECT ' . implode(',', $keys) . ' from ' . $this->table;
+    public function query( $sql ){
          $stmt = $this->dbh->query( $sql );
 
          return $stmt;
