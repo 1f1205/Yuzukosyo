@@ -1,6 +1,7 @@
 <?php
 
-abstract class BaseParser {
+abstract class BaseParser
+{
 
     /**
      * 引数でしていされた記事の配列をループし、

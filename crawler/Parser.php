@@ -1,5 +1,6 @@
 <?php
-class Parser extends BaseParser {
+class Parser extends BaseParser
+{
 
     /**
      * 記事をパースする

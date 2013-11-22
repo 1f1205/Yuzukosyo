@@ -1,5 +1,6 @@
 <?php
-class ArticleModel {
+class ArticleModel
+{
     public $title;
     public $link;
     public $publishedDate;

@@ -1,5 +1,6 @@
 <?php
-class Crawler extends BaseCrawler {
+class Crawler extends BaseCrawler
+{
     /**
      * 通信成功時の処理
      */

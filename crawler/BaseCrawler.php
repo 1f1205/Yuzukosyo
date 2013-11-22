@@ -1,5 +1,6 @@
 <?php
-abstract class BaseCrawler {
+abstract class BaseCrawler
+{
 
     /**
      * APIへの接続をマルチスレッドで行う
