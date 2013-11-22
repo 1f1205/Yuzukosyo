@@ -1,5 +1,5 @@
 <?php
-abstract class BaseCrawler
+abstract class BaseCurl
 {
 
     /**
