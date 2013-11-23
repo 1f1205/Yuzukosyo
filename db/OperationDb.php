@@ -47,16 +47,16 @@ class OperationDb
 
     // key設定
     public function makeKey( $key ){
-        $targetKey = '*';
+        // keyが空の場合*を返却
+        if( empty( $key ) ){ return '*'; }
+        $targetKey = '';
         // 引数にあわせて取得キー作成
-        if( !empty( $key ) ){ 
-            if( is_array( $key ) ){
-                // 引数が配列の場合、カンマ区切り
-                $targetKey = implode( ',', $key );
-            }else{
-                // 引数がstringの場合、そのまんま
-                $targetKey = $key;
-            }
+        if( is_array( $key ) ){
+            // 引数が配列の場合、カンマ区切り
+            $targetKey = implode( ',', $key );
+        }else{
+            // 引数がstringの場合、そのまんま
+            $targetKey = $key;
         }
         return $targetKey;
     }
