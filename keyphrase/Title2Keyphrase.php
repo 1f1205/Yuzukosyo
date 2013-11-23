@@ -3,20 +3,24 @@ require_once('./KeyphraseAPI.php');
 
 class Title2KeyPhrase
 {
+    private $keyApiObj;
+
+    public function __construct() {
+
+        $this->keyApiObj = new KeyphraseAPI();
+
+    }
     
     public function execute($appId, $sentence) {
 
-        // オブジェクト生成
-        $keyApiObj = new KeyphraseAPI();
-        
         // RequestURL生成
-        $requestUrl = $keyApiObj->replaceURL($appId, $sentence);
+        $requestUrl = $this->keyApiObj->replaceURL($appId, $sentence);
         
         // APIからレスポンス取得
-        $responseXml = $keyApiObj->getAPIResponse($requestUrl);
+        $responseXml = $this->keyApiObj->getAPIResponse($requestUrl);
         
         // レスポンスXMLからkeyphraseを抽出
-        $keyphrases = $keyApiObj->extractKeyphrase($responseXml);
+        $keyphrases = $this->keyApiObj->extractKeyphrase($responseXml);
 
         return $keyphrases;
     }
