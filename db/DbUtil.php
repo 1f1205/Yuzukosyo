@@ -3,21 +3,31 @@ require_once("./OperationDb.php");
 
 Class DbUtil extends OperationDb
 {
-    public function __construct( $database, $user, $pass, $table ){
+    // 条件式とかいれとくやつ
+    private $condition = null;
+
+    // tableはあった場合セット
+    public function __construct( $database, $user, $pass, $table = '' ){
          parent::__construct($database, $user, $pass );
-         $this->table    = $table;
+         if( '' != $table ){ parent::setTable( $table ); }
     }
 
-    public function setTable(){
-         parent::setTable( $this->table );
+    // 一応後で変えれるようにテーブルセットを用意
+    public function setTable( $table ){
+         parent::setTable( $table );
     }
         
-    public function execute( $key, $value, $fieldList = array() ){
-        // チェック対象キーがわたってこない場合、返却
-        if( 0 == count( $key ) ){ return false; }
-       
-        $this->setTable();
-        $sql    = parent::getSelectSql( $fieldList ) . parent::getWhereEqual( $key, $value );
+    // 条件設定(where,order)など拡張予定
+    //todo type=(where,orederなど),condition=(=,<,>などの比較系とか)の実装
+    public function setCondition( $type, $key, $value, $condition = '=' )
+    {
+        $this->condition = parent::getWhereEqual( $key, $value );
+    }
+
+    // 実行メソッド
+    public function execute( $fieldList = array() )
+    {
+        $sql    = parent::getSelectSql( $fieldList ) . $this->condition;
         $stmt   = parent::query( $sql );
         $result = parent::fetch( $stmt );
 
