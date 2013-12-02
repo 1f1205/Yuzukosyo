@@ -11,6 +11,8 @@ class Crawler extends BaseCurl
         $parser = new Parser();
         $articles = $parser->parse( $decode->entries );
 
+        print_r( $articles );
+
         // TODO この後に特徴語を抽出
         // DBに格納
     }

@@ -3,6 +3,48 @@ abstract class BaseCurl
 {
 
     /**
+     * getContents 
+     * 引数に渡されたURLの配列かURLの文字列かで処理を分ける
+     * 
+     * @param mixed $url
+     * @access public
+     * @return void
+     */
+    public function getContents( $url ) {
+        if ( is_array($url) ){
+            $this->getMultiContents( $url );
+        } else {
+            $this->getSingleContents( $url );
+        }
+    }
+
+    /**
+     * getSingleContents 
+     * cURLで指定されたURLのコンテンツを取得する
+     * 
+     * @param $url 
+     * @access public
+     * @return void
+     */
+    public function getSingleContents( $url ){
+        $conn = curl_init( $url );
+        $this->setCurlOption($conn);
+
+        // cURLの実行
+        $contents = curl_exec( $conn );
+
+        $statusCode = curl_getinfo( $conn, CURLINFO_HTTP_CODE );
+        if( $statusCode < 300 && $statusCode >= 200 ){
+            // 通信成功時
+            $this->success( $contents );
+        }else{
+            // 通信失敗時
+            $this->fail();
+        }
+        curl_close( $conn );
+    }
+
+    /**
      * APIへの接続をマルチスレッドで行う
      */
     public function getMultiContents( $urlList ){
