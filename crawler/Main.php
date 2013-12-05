@@ -8,7 +8,8 @@ const GOOGLE_FEED_API = 'https://ajax.googleapis.com/ajax/services/feed/load?v=1
 // 取得するページ数
 const PAGE_NUM = 20;
 
-function __autoload($class_name) {
+function __autoload($class_name) 
+{
     require_once $class_name . '.php';
 }
 
@@ -25,11 +26,13 @@ $url = getUrl();
 $crawler = new Crawler();
 $crawler->getContents( $url );
 
-function getUrl() {
+function getUrl() 
+{
     return sprintf( GOOGLE_FEED_API, PAGE_NUM, "http://blog.livedoor.jp/nanjstu/index.rdf" );
 }
 
-function selectRssTable(){
+function selectRssTable()
+{
     // テーブルを参照したとみなす
     //
     $urlList = array();

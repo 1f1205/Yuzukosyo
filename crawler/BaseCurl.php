@@ -10,8 +10,9 @@ abstract class BaseCurl
      * @access public
      * @return void
      */
-    public function getContents( $url ) {
-        if ( is_array($url) ){
+    public function getContents( $url )
+    {
+        if ( is_array($url) ) {
             $this->getMultiContents( $url );
         } else {
             $this->getSingleContents( $url );
@@ -26,7 +27,8 @@ abstract class BaseCurl
      * @access public
      * @return void
      */
-    public function getSingleContents( $url ){
+    public function getSingleContents( $url )
+    {
         $conn = curl_init( $url );
         $this->setCurlOption($conn);
 
@@ -34,10 +36,10 @@ abstract class BaseCurl
         $contents = curl_exec( $conn );
 
         $statusCode = curl_getinfo( $conn, CURLINFO_HTTP_CODE );
-        if( $statusCode < 300 && $statusCode >= 200 ){
+        if ( $statusCode < 300 && $statusCode >= 200 ) {
             // 通信成功時
             $this->success( $contents );
-        }else{
+        } else {
             // 通信失敗時
             $this->fail();
         }
@@ -47,7 +49,8 @@ abstract class BaseCurl
     /**
      * APIへの接続をマルチスレッドで行う
      */
-    public function getMultiContents( $urlList ){
+    public function getMultiContents( $urlList )
+    {
         // マルチハンドルの用意
         $multiHandle = curl_multi_init();
 
@@ -55,7 +58,7 @@ abstract class BaseCurl
         $handleList = array();
 
         // 指定されたURLをマルチハンドルに登録する
-        foreach( $urlList as $url ){
+        foreach ( $urlList as $url ) {
             $handleList[$url] = curl_init( $url );
             $this->setCurlOption( $handleList[$url] );
             curl_multi_add_handle( $multiHandle, $handleList[$url] );
@@ -64,16 +67,16 @@ abstract class BaseCurl
         // 全ての処理が完了するまで待つ
         $running = null;
         while( true ) {
-            if( $running === 0) {
+            if ( $running === 0) {
                 break;
             }
             curl_multi_exec( $multiHandle, $running );
         }
 
-        foreach( $urlList as $url ){
+        foreach( $urlList as $url ) {
             // ステータスコード
             $statusCode = curl_getinfo( $handleList[$url], CURLINFO_HTTP_CODE );
-            if($statusCode < 300 && $statusCode >= 200){
+            if ($statusCode < 300 && $statusCode >= 200) {
                 // 通信成功時
                 $this->success( curl_multi_getcontent( $handleList[$url] ) );
             } else {
@@ -92,9 +95,11 @@ abstract class BaseCurl
     /**
      * Curlのオプションを指定する
      */
-    protected function setCurlOption( $maltiHundle ){
+    protected function setCurlOption( $maltiHundle )
+    {
         // curl_exec()の結果を文字列として返す
         curl_setopt($maltiHundle, CURLOPT_RETURNTRANSFER, TRUE);
+
         // タイムアウトを1秒に設定
         curl_setopt($maltiHundle, CURLOPT_TIMEOUT, 1);
     }
