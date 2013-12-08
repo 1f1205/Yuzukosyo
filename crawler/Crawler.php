@@ -18,7 +18,8 @@ class Crawler extends BaseCurl
     /**
      * 通信失敗時の処理
      */
-    protected function fail(){
+    protected function fail()
+    {
         // 今は特に何もしない
     }
 }

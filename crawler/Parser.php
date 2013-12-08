@@ -9,7 +9,8 @@ class Parser extends BaseParser
      * @access public
      * @return articleのオブジェクト
      */
-    public function parseArticle($entry) {
+    public function parseArticle($entry) 
+    {
         $article = StructYuzukosyo::$article;
 
         $article[ StructYuzukosyo::ARTICLE_TITLE ] = $entry->title;

@@ -10,11 +10,12 @@ abstract class BaseParser
      * @access public
      * @return array パースされたデータの配列
      */
-    public function parse($decodeContent) {
+    public function parse( $decodeContent ) 
+    {
         $datas = array();
 
         foreach ($decodeContent as $entry) {
-            array_push($datas, $this->parseArticle($entry));
+            array_push( $datas, $this->parseArticle($entry) );
         }
 
         return $datas;
