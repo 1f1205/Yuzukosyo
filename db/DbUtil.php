@@ -12,11 +12,6 @@ Class DbUtil extends OperationDb
          if( '' != $table ){ parent::setTable( $table ); }
     }
 
-    // 一応後で変えれるようにテーブルセットを用意
-    public function setTable( $table ){
-         parent::setTable( $table );
-    }
-        
     // 条件設定(where,order)など拡張予定
     //todo type=(where,orederなど),condition=(=,<,>などの比較系とか)の実装
     public function setCondition( $type, $key, $value, $condition = '=' )
