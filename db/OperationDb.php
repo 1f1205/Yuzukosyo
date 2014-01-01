@@ -29,14 +29,14 @@ class OperationDb
     // コンストラクタ
     public function __construct( $database, $user, $pass, $host = '' ){
         // host名が入ってたら入れ直す（まぁ、多分使わん）
-        if( '' != $host ){ $this->host = $host; }
+        if ( '' != $host ){ $this->host = $host; }
         $this->database = $database;
         $this->user     = $user;
         $this->pass     = $pass;
 
         try{
             $dsn = $this->engine . ':dbname=' . $this->database . ";host=" . $this->host; 
-            $this->dbh = new PDO( $dsn, $this->user, $this->pass ); 
+            $this->dbh = new PDO($dsn, $this->user, $this->pass); 
         }catch (PDOException $e){
             print('Error:'.$e->getMessage());
             die();
@@ -46,8 +46,8 @@ class OperationDb
     /* 実行 */
     public function execute( $type, $data = array() )
     {
-        $sqlType = 'execute' . ucfirst( $type );
-        $result  = $this->$sqlType( $data );
+        $sqlType = 'execute' . ucfirst($type);
+        $result  = $this->$sqlType($data);
         return $result;
     }   
 
@@ -60,7 +60,7 @@ class OperationDb
     public function setCondition( $type, $key, $comparisonOperator = '=' , $value )
     {
         $setMethod = 'set' . ucfirst($type);
-        $this->$setMethod( $key, $value, $comparisonOperator );
+        $this->$setMethod($key, $value, $comparisonOperator);
     }
 
     /* 条件式クリア */
@@ -73,15 +73,15 @@ class OperationDb
     public function makeKey( $fieldList )
     {
         // keyが空の場合*を返却
-        if( empty( $fieldList ) ){ return '*'; }
+        if ( empty($fieldList) ){ return '*'; }
         $targetKey = '';
 
         // quote
-        $fieldList = $this->makeQuote( $fieldList );
+        $fieldList = $this->makeQuote($fieldList);
         // 引数にあわせて取得キー作成
-        if( is_array( $fieldList ) ){
+        if ( is_array($fieldList) ){
             // 引数が配列の場合、カンマ区切り
-            $targetKey = implode( ',', $fieldList );
+            $targetKey = implode(',', $fieldList);
         }else{
             // 引数がstringの場合、そのまんま
             $targetKey = $fieldList;
@@ -94,25 +94,25 @@ class OperationDb
     {
         $targetKey = '';
         $targetValue = '';
-        if( empty( $data ) ){ return array( $targetKey, $targetValue ); }
+        if ( empty($data) ){ return array($targetKey, $targetValue); }
         foreach( $data as $key => $value ){
             $tmpKey[] = $key;
-            $tmpValue[] = $this->makeQuote( $value );
+            $tmpValue[] = $this->makeQuote($value);
         }
-        $targetKey = implode( ',', $tmpKey );
-        $targetValues = implode( ',', $tmpValue );
-        return array( $targetKey, $targetValues );
+        $targetKey = implode(',', $tmpKey);
+        $targetValues = implode(',', $tmpValue);
+        return array($targetKey, $targetValues);
     }
 
     // quote関数
     public function makeQuote( $data )
     {
-        if( is_array( $data ) ){
+        if ( is_array($data) ) {
             foreach( $data as $key => $val ){
-                $rtnData[ $key ] = $this->dbh->quote( $val );
+                $rtnData[ $key ] = $this->dbh->quote($val);
             }
         } else {
-            $rtnData = $this->dbh->quote( $data );
+            $rtnData = $this->dbh->quote($data);
         }
 
         return $rtnData;
@@ -122,30 +122,30 @@ class OperationDb
     public function comparePhrase( $key, $value, $comparisonOperator )
     {
         // 対象のkeyの数とvalueの数があってない場合はreturn
-        if( count( $key ) != count( $value ) ){ return 0; }
+        if ( count($key) != count($value) ){ return 0; }
       
         // 比較句内作成
         // todo 比較演算子の種類増やす（引数判断）
         $compareArray = array();
-        if( is_array( $key ) ){
+        if ( is_array($key) ){
             // 引数が配列の場合
             for( $i=0; $i<count( $key ); $i++ ){
-                $compareArray[] = $key[$i] . $comparisonOperator . $this->makeQuote( $value[$i] );
+                $compareArray[] = $key[$i] . $comparisonOperator . $this->makeQuote($value[$i]);
             }
         }else{
-            $compareArray[] = $key . $comparisonOperator . $this->makeQuote(  $value );
+            $compareArray[] = $key . $comparisonOperator . $this->makeQuote($value);
         }
-        return implode( ',', $compareArray );
+        return implode(',', $compareArray);
     }
 
     /* Select */
     public function executeSelect( $fieldList = array() )
     {
         $sql = '';
-        $targetKey = $this->makeKey( $fieldList );
+        $targetKey = $this->makeKey($fieldList);
         $sql = 'SELECT ' . $targetKey . ' from ' . $this->table . $this->condition;
-        $stmt = $this->dbh->query( $sql );
-        $data = $this->fetch( $stmt );
+        $stmt = $this->dbh->query($sql);
+        $data = $this->fetch($stmt);
         return $data;
     }
 
@@ -153,10 +153,10 @@ class OperationDb
     public function executeInsert( $data = array() )
     {
         // dataが空の場合はreturn
-        if( empty( $data ) ){ return false; }
-        list( $targetKey, $targetValue ) = $this->makeKeyValue( $data );
+        if ( empty($data) ){ return false; }
+        list($targetKey, $targetValue) = $this->makeKeyValue($data);
         $sql = 'INSERT INTO ' . $this->table . ' (' . $targetKey . ') values (' . $targetValue . ')';
-        $stmt = $this->dbh->prepare( $sql );
+        $stmt = $this->dbh->prepare($sql);
         $bool = $stmt->execute();
         return $bool;
     }
@@ -165,13 +165,13 @@ class OperationDb
     public function executeUpdate( $data = array() )
     {
         // dataが空の場合はreturn
-        if( empty( $data ) ){ return false; }
+        if ( empty($data) ){ return false; }
         foreach( $data as $key => $value ){
             $compareArray[] = $key . " = '" . $value . "'";
         }
-        $updateColumns = implode( ',', $compareArray );
+        $updateColumns = implode(',', $compareArray);
         $sql = 'UPDATE ' . $this->table . ' SET ' . $updateColumns . $this->condition;
-        $stmt = $this->dbh->prepare( $sql );
+        $stmt = $this->dbh->prepare($sql);
         $bool = $stmt->execute();
 
         return $bool;
@@ -181,7 +181,7 @@ class OperationDb
     public function executeDelete()
     {
         $sql = 'DELETE FROM ' . $this->table . $this->condition;
-        $count = $this->dbh->exec( $sql );
+        $count = $this->dbh->exec($sql);
         return $count;
     }
 
@@ -189,8 +189,8 @@ class OperationDb
     public function setWhere( $key, $value, $comparisonOperator )
     {
         // keyとvalueの数が同じ場合に設定
-        if( count( $key ) == count( $value ) ){
-            $wherePhrase = $this->comparePhrase( $key, $value, $comparisonOperator );
+        if ( count($key) == count($value) ){
+            $wherePhrase = $this->comparePhrase($key, $value, $comparisonOperator);
             $this->condition = ' where ' . $wherePhrase;
         }
     }
