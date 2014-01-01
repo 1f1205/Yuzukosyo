@@ -64,7 +64,7 @@ class OperationDb
     }
 
     /* 条件式クリア */
-    public function crearCondition()
+    public function clearCondition()
     {
         $this->condition = '';
     }
@@ -75,6 +75,9 @@ class OperationDb
         // keyが空の場合*を返却
         if( empty( $fieldList ) ){ return '*'; }
         $targetKey = '';
+
+        // quote
+        $fieldList = $this->makeQuote( $fieldList );
         // 引数にあわせて取得キー作成
         if( is_array( $fieldList ) ){
             // 引数が配列の場合、カンマ区切り
@@ -94,11 +97,25 @@ class OperationDb
         if( empty( $data ) ){ return array( $targetKey, $targetValue ); }
         foreach( $data as $key => $value ){
             $tmpKey[] = $key;
-            $tmpValue[] = "'" . $value . "'";
+            $tmpValue[] = $this->makeQuote( $value );
         }
         $targetKey = implode( ',', $tmpKey );
         $targetValues = implode( ',', $tmpValue );
         return array( $targetKey, $targetValues );
+    }
+
+    // quote関数
+    public function makeQuote( $data )
+    {
+        if( is_array( $data ) ){
+            foreach( $data as $key => $val ){
+                $rtnData[ $key ] = $this->dbh->quote( $val );
+            }
+        } else {
+            $rtnData = $this->dbh->quote( $data );
+        }
+
+        return $rtnData;
     }
 
     /* 比較句作成 */
@@ -113,10 +130,10 @@ class OperationDb
         if( is_array( $key ) ){
             // 引数が配列の場合
             for( $i=0; $i<count( $key ); $i++ ){
-                $compareArray[] = $key[$i] . $comparisonOperator . "'" . $value[$i] . "'";
+                $compareArray[] = $key[$i] . $comparisonOperator . $this->makeQuote( $value[$i] );
             }
         }else{
-                $compareArray[] = $key . $comparisonOperator . "'" . $value . "'";
+            $compareArray[] = $key . $comparisonOperator . $this->makeQuote(  $value );
         }
         return implode( ',', $compareArray );
     }
@@ -152,8 +169,8 @@ class OperationDb
         foreach( $data as $key => $value ){
             $compareArray[] = $key . " = '" . $value . "'";
         }
-        $setPhrase = implode( ',', $compareArray );
-        $sql = 'UPDATE ' . $this->table . ' SET ' . $setPhrase . $this->condition;
+        $updateColumns = implode( ',', $compareArray );
+        $sql = 'UPDATE ' . $this->table . ' SET ' . $updateColumns . $this->condition;
         $stmt = $this->dbh->prepare( $sql );
         $bool = $stmt->execute();
 
