@@ -16,8 +16,21 @@ $keys = array( 'id' );
 $dao=new OperationDb($database,$user,$pass);
 // テーブル名設定
 $dao->setTable( $table );
-// PDOStatementオブジェクト取得
-$stmt=$dao->query();
-// データ取得
-$data=$dao->fetch($a);
-var_dump($data);
+
+//$dao->setCondition('where','tag_id', 1);
+//$dao->setCondition('where','tag_id', '>', 3);
+
+//select
+$c=$dao->execute('select');
+
+//insert
+//$c=$dao->execute('insert',array('tag_id'=>13));
+
+//where
+//delete
+//$c=$dao->execute('delete');
+
+//update
+//$c=$dao->execute('update',array('tag_name'=>'aiue'));
+
+var_dump($c);
